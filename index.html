@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nebula POS - Cloud Admin</title>
+  <meta name="description" content="Panel de Control y Administración Cloud en Tiempo Real para Nebula POS">
+  <meta name="theme-color" content="#7C5CFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <img src="icons/icon-192.png" alt="Nebula Logo" class="brand-logo" onerror="this.style.display='none'">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h1 class="brand-title">NEBULA POS</h1>
+            <span class="brand-badge">CLOUD ADMIN</span>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.75rem;">Sincronización en Vivo</small>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav">
+        <button class="nav-tab active" data-tab="sales">
+          <span>📊</span> Ventas y Métricas
+        </button>
+        <button class="nav-tab" data-tab="inventory">
+          <span>📦</span> Inventario Físico
+        </button>
+        <button class="nav-tab" data-tab="products">
+          <span>🍸</span> Productos y Precios
+        </button>
+        <button class="nav-tab" data-tab="shifts">
+          <span>⏰</span> Cierres de Turno
+        </button>
+      </nav>
+
+      <!-- Controls -->
+      <div class="header-controls">
+        <select id="storeSelector" class="store-selector" title="Seleccionar Sede">
+          <option value="local_principal">Sede Principal</option>
+        </select>
+
+        <div id="statusBadge" class="status-badge">
+          <span class="status-dot"></span>
+          <span id="statusText">Conectado</span>
+        </div>
+
+        <button id="btnRefresh" class="btn-icon" title="Refrescar datos en vivo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+        </button>
+
+        <button id="btnSettings" class="btn-icon" title="Configuración de Conexión Cloud">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- VIEW 1: SALES & METRICS -->
+    <section id="view-sales" class="view-section active">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-pills">
+          <button class="pill-btn active" data-filter="today">Hoy</button>
+          <button class="pill-btn" data-filter="yesterday">Ayer</button>
+          <button class="pill-btn" data-filter="week">Esta Semana</button>
+          <button class="pill-btn" data-filter="month">Este Mes</button>
+          <button class="pill-btn" data-filter="all">Histórico</button>
+        </div>
+        <div class="date-inputs">
+          <input type="date" id="dateStart" class="date-input" title="Fecha Inicial">
+          <span style="color: var(--text-muted); font-size: 0.8rem;">a</span>
+          <input type="date" id="dateEnd" class="date-input" title="Fecha Final">
+          <button id="btnApplyDates" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Filtrar</button>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Total Ventas</span>
+            <span class="kpi-icon">💰</span>
+          </div>
+          <div id="kpiTotalSales" class="kpi-value">$0</div>
+          <div id="kpiSalesSubtitle" class="kpi-sub">0 transacciones registradas</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Ticket Promedio</span>
+            <span class="kpi-icon">📈</span>
+          </div>
+          <div id="kpiAvgTicket" class="kpi-value">$0</div>
+          <div class="kpi-sub">Gasto promedio por orden</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Efectivo en Caja</span>
+            <span class="kpi-icon">💵</span>
+          </div>
+          <div id="kpiCashSales" class="kpi-value" style="color: #34D399;">$0</div>
+          <div class="kpi-sub">Cobrado en efectivo</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Electrónico / Tarjeta</span>
+            <span class="kpi-icon">💳</span>
+          </div>
+          <div id="kpiCardSales" class="kpi-value" style="color: #38BDF8;">$0</div>
+          <div class="kpi-sub">Tarjetas + Transferencias</div>
+        </div>
+      </div>
+
+      <!-- Sales Table Card -->
+      <div class="card-box">
+        <div class="card-box-header">
+          <h2 class="box-title"><span>🧾</span> Historial de Tickets y Facturación</h2>
+          <span id="salesCountBadge" class="badge badge-card">0 Ventas</span>
+        </div>
+        <div class="table-responsive">
+          <table class="nebula-table">
+            <thead>
+              <tr>
+                <th>Consecutivo</th>
+                <th>Fecha / Hora</th>
+                <th>Mesa / Cliente</th>
+                <th>Cajero</th>
+                <th>Método de Pago</th>
+                <th>Total</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody">
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <p>Cargando transacciones de la nube...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: PHYSICAL INVENTORY -->
+    <section id="view-inventory" class="view-section">
+      <div class="card-box">
+        <div class="card-box-header">
+          <div>
+            <h2 class="box-title"><span>📦</span> Inventario Físico (Vasos e Insumos Descontables)</h2>
+            <small style="color: var(--text-muted);">Existencias en tiempo real y alertas de stock bajo</small>
+          </div>
+          <button id="btnOpenAddStock" class="btn-primary">
+            <span>➕</span> Ingresar Stock
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="nebula-table">
+            <thead>
+              <tr>
+                <th>Elemento Descontable</th>
+                <th>Stock Actual</th>
+                <th>Stock Mínimo</th>
+                <th>Unidad</th>
+                <th>Estado</th>
+                <th style="text-align: right;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <p>Consultando inventario físico...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Inventory Movement Logs -->
+      <div class="card-box">
+        <div class="card-box-header">
+          <h2 class="box-title"><span>📋</span> Registro de Movimientos y Auditoría</h2>
+          <small style="color: var(--text-muted);">Últimas entradas y salidas registradas</small>
+        </div>
+        <div class="table-responsive">
+          <table class="nebula-table">
+            <thead>
+              <tr>
+                <th>Fecha / Hora</th>
+                <th>Elemento</th>
+                <th>Concepto / Motivo</th>
+                <th>Cantidad</th>
+                <th>Stock Previo</th>
+                <th>Nuevo Stock</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryLogsBody">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <p>No hay registros de movimientos recientes.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: PRODUCTS & PRICES -->
+    <section id="view-products" class="view-section">
+      <div class="card-box">
+        <div class="card-box-header">
+          <h2 class="box-title"><span>🍸</span> Catálogo de Productos y Modificación de Precios</h2>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="productSearch" class="form-control" style="width: 220px; padding: 7px 12px;" placeholder="Buscar producto...">
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="nebula-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio Actual</th>
+                <th>Inventario Físico</th>
+                <th>Estado</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <p>Cargando productos...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: SHIFT REPORTS -->
+    <section id="view-shifts" class="view-section">
+      <div class="card-box">
+        <div class="card-box-header">
+          <h2 class="box-title"><span>⏰</span> Historial de Cierres de Turno</h2>
+          <small style="color: var(--text-muted);">Auditoría de recaudos, gastos en caja y vasos consumidos por turno</small>
+        </div>
+        <div class="table-responsive">
+          <table class="nebula-table">
+            <thead>
+              <tr>
+                <th>Turno ID</th>
+                <th>Cajero</th>
+                <th>Inicio</th>
+                <th>Cierre</th>
+                <th>Total Ventas</th>
+                <th>Gastos Caja</th>
+                <th>Descuentos Físicos</th>
+              </tr>
+            </thead>
+            <tbody id="shiftsTableBody">
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <p>Cargando reportes de turnos...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-nav">
+    <button class="mobile-nav-btn active" data-tab="sales">
+      <span class="icon">📊</span>
+      <span>Ventas</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="inventory">
+      <span class="icon">📦</span>
+      <span>Inventario</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="products">
+      <span class="icon">🍸</span>
+      <span>Productos</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="shifts">
+      <span class="icon">⏰</span>
+      <span>Turnos</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: Ticket Details -->
+  <div id="ticketModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalTicketTitle" class="modal-title">Detalle de Ticket</h3>
+          <small id="modalTicketMeta" style="color: var(--text-muted);"></small>
+        </div>
+        <button class="btn-icon modal-close" onclick="closeModal('ticketModal')">✕</button>
+      </div>
+      <div id="modalTicketItems">
+        <!-- Ticket Items dynamic -->
+      </div>
+      <div class="ticket-totals">
+        <div class="ticket-total-row">
+          <span>Subtotal</span>
+          <span id="modalSubtotal">$0</span>
+        </div>
+        <div class="ticket-total-row">
+          <span>Descuento</span>
+          <span id="modalDiscount" style="color: var(--warning);">$0</span>
+        </div>
+        <div class="ticket-total-row grand">
+          <span>TOTAL</span>
+          <span id="modalGrandTotal">$0</span>
+        </div>
+      </div>
+      <div style="margin-top: 20px; text-align: right;">
+        <button class="btn-secondary" onclick="closeModal('ticketModal')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Physical Stock -->
+  <div id="addStockModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">➕ Ingresar Stock a Inventario Físico</h3>
+        <button class="btn-icon modal-close" onclick="closeModal('addStockModal')">✕</button>
+      </div>
+      <form id="addStockForm">
+        <div class="form-group">
+          <label class="form-label">Elemento Descontable</label>
+          <select id="stockItemSelect" class="form-control" required>
+            <!-- Dynamic items -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cantidad a Ingresar</label>
+          <input type="number" id="stockQuantity" class="form-control" min="1" step="1" placeholder="Ej: 100" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Concepto / Motivo</label>
+          <input type="text" id="stockConcept" class="form-control" placeholder="Ej: Compra de vasos lote x 100" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('addStockModal')">Cancelar</button>
+          <button type="submit" id="btnSaveStock" class="btn-primary">Guardar Ingreso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Product Price -->
+  <div id="editProductModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">✏️ Modificar Precio de Producto</h3>
+        <button class="btn-icon modal-close" onclick="closeModal('editProductModal')">✕</button>
+      </div>
+      <form id="editProductForm">
+        <input type="hidden" id="editProductId">
+        <div class="form-group">
+          <label class="form-label">Nombre del Producto</label>
+          <input type="text" id="editProductName" class="form-control" readonly style="opacity: 0.8;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Precio ($ COP)</label>
+          <input type="number" id="editProductPrice" class="form-control" min="0" step="100" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado en Menú</label>
+          <select id="editProductActive" class="form-control">
+            <option value="true">Activo (Visible para venta)</option>
+            <option value="false">Inactivo (Oculto)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('editProductModal')">Cancelar</button>
+          <button type="submit" id="btnSaveProduct" class="btn-primary">Actualizar Precio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Cloud Settings -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ Conexión Multi-Local Supabase</h3>
+        <button class="btn-icon modal-close" onclick="closeModal('settingsModal')">✕</button>
+      </div>
+      <form id="settingsForm">
+        <div class="form-group">
+          <label class="form-label">Supabase URL</label>
+          <input type="url" id="cfgApiUrl" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Supabase API Key (Publishable / Anon)</label>
+          <input type="password" id="cfgApiKey" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sede / Store ID</label>
+          <input type="text" id="cfgStoreId" class="form-control" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('settingsModal')">Cerrar</button>
+          <button type="submit" class="btn-primary">Guardar Configuración</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
