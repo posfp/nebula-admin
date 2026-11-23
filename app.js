@@ -202,9 +202,16 @@ function switchTab(tabName) {
   });
 }
 
-// Date Range Calculation
+// Date Range Calculation (Local Timezone)
+const formatYMD = (d) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 function initDateFilters() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = formatYMD(new Date());
   document.getElementById('dateStart').value = today;
   document.getElementById('dateEnd').value = today;
   applyFilterDates();
@@ -212,7 +219,6 @@ function initDateFilters() {
 
 function applyFilterDates() {
   const now = new Date();
-  const formatYMD = (d) => d.toISOString().split('T')[0];
 
   if (currentFilter === 'today') {
     filterStartDate = formatYMD(now);
