@@ -457,15 +457,29 @@ function renderInventory(items) {
             ${isLow ? '⚠️ Stock Bajo' : '✓ Stock Óptimo'}
           </span>
         </td>
-        <td style="text-align: right;">
-          <button class="btn-secondary" style="padding: 5px 10px; font-size: 0.78rem;" onclick='openQuickStockModal("${item.id}")'>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn-secondary" style="padding: 5px 10px; font-size: 0.78rem; margin-right: 4px;" onclick='openQuickStockModal("${item.id}")'>
             ➕ Añadir
+          </button>
+          <button class="btn-secondary" style="padding: 5px 10px; font-size: 0.78rem; color: #EF4444;" onclick='deletePhysicalItemCloud("${item.id}", "${item.name}")'>
+            🗑 Eliminar
           </button>
         </td>
       </tr>
     `;
   }).join('');
 }
+
+window.deletePhysicalItemCloud = async function(itemId, itemName) {
+  if (!confirm(`¿Estás seguro de que deseas eliminar '${itemName}' de la nube?`)) return;
+  try {
+    await apiRequest(`physical_inventory?id=eq.${itemId}`, { method: 'DELETE' });
+    await loadInventory();
+    await loadInventoryLogs();
+  } catch (err) {
+    alert(`Error al eliminar: ${err.message}`);
+  }
+};
 
 window.openQuickStockModal = function(itemId) {
   document.getElementById('addStockForm').reset();
